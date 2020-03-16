@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./app.css">
+    <title>Spend Tracker</title>
+</head>
+<body>
+    <div class="container">
+        <div name="overview_area" class="overview_container">
+            <div class="monthly_spends">
+                <h3 id="month_label" class="cash_label">This Month's</h3>
+                <h2 id="amt_monthly_spend" class="cash_item">N/A</h2>
+            </div>
+            <div class="todays_spends">
+                <h3 class="cash_label">Today's Spends</h3>
+                <h2 id="amt_todays_spend" class="cash_item">N/A</h2>
+            </div>
+            <div class="cash_available">
+                <h3 class="cash_label">Cash Available</h3>
+                <h2 id="amt_cash_available" class="cash_item">N/A</h2>
+            </div>
+        </div>
+        <div name="spend_form_area" class="add_spends_container">
+            <form class="spends_form">
+                <div class="input_group">
+                    <label for="">
+                        amount (₹)
+                    </label>
+                    <input id="spend_amt_actual" type="number" placeholder="enter amount">
+                </div>
+                <div class="input_group">
+                    <label for="">
+                        category of spend
+                    </label>
+                    <select id="spend_cat_actual">
+                        <option value="0">Cash</option>
+                        <option value="1" selected="true">Grocery</option>
+                        <option value="2">Shopping</option>
+                        <option value="3">Utility</option>
+                        <option value="4">Electronics</option>
+                    </select>
+                </div>
+                <div class="input_group">
+                    <button id="spend_itemize_btn" class="spend_itemize_btn">+ Itemize</button>
+                </div>
+            </form>
+        </div>
+        <div name="history_area">
+            <br />
+                <h1>History</h1>
+            <br />
+            <div id="spend_history_list_container" class="spend_history_list_container"></div>
+        </div>
+    </div>
+    <script src="./js/data.js"></script>
+    <script src="./js/date_util.js"></script>
+    <script src="./js/history_render.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>
