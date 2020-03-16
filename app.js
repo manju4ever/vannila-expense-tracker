@@ -1,66 +1,9 @@
-const getCurrentMonthExpense = () => {
-    const current_month = new Date().getMonth();
-    return my_tx_data
-        .filter(record => (new Date(record.tx_date).getMonth() === current_month))
-        .filter(record => record.tx_type > 0)
-        .reduce((cost, record) =>  cost + parseFloat(record.tx_amt), 0)
-        .toLocaleString();
-}
-
-const getRateChangeForMonth = () => {
-    const 
-        current_month = new Date().getMonth(),
-        last_month = current_month - 1;
-    const current_month_expense = my_tx_data
-        .filter(record => (new Date(record.tx_date).getMonth() === current_month))
-        .filter(record => record.tx_type > 0)
-        .reduce((cost, record) =>  cost + parseFloat(record.tx_amt), 0)
-    const last_month_expense = my_tx_data
-        .filter(record => (new Date(record.tx_date).getMonth() === last_month))
-        .filter(record => record.tx_type > 0)
-        .reduce((cost, record) =>  cost + parseFloat(record.tx_amt), 0)
-    return (((current_month_expense - last_month_expense) / (current_month_expense + last_month_expense)) * 100).toFixed(2);
-}
-
-const getRateChangeForDay = () => {
-    const today = new Date();
-    const records_of_this_month = my_tx_data.filter(record => (new Date(record.tx_date)).getMonth() === today.getMonth());
-    const current_day_expense = records_of_this_month
-        .filter(record => (new Date(record.tx_date).getDate()) === today.getDate())
-        .filter(record => record.tx_type > 0)
-        .reduce((cost, rec) => cost + parseFloat(rec.tx_amt), 0);
-    const last_day_expense = records_of_this_month
-        .filter(record => (new Date(record.tx_date).getDate()) === today.getDate() - 1)
-        .filter(record => record.tx_type > 0)
-        .reduce((cost, rec) => cost + parseFloat(rec.tx_amt), 0);  
-    return (((current_day_expense - last_day_expense) / last_day_expense) * 100).toFixed(2);
-}
-
-const getTodaysExpense = () => {
-    const today = new Date();
-    return my_tx_data
-    .filter(eachDay => eachDay.tx_type > 0)
-    .filter(eachDay => new Date(eachDay.tx_date).getDate() === today.getDate())
-    .reduce((cost, record) => cost + parseFloat(record.tx_amt), 0)
-    .toLocaleString();
-}
-
-const getCashBalance = () => {
-    const overall_bal = my_tx_data
-        .filter(record => record.tx_type === 0)
-        .reduce((cost, record) =>  cost + parseFloat(record.tx_amt), 0);
-
-    const total_expense = my_tx_data
-        .filter(record => record.tx_type > 0)
-        .reduce((cost, record) =>  cost + parseFloat(record.tx_amt), 0);
-    
-    return parseFloat(overall_bal - total_expense).toLocaleString();
-}
 const up = '↑', down = '↓';
 const sign_class_map = {
     [up]: 'credit',
     [down] : 'debit'
 };
+
 function updateMonthlySpendUI() {
     document.querySelector("#month_label").innerHTML = getMonthInText(new Date().getMonth(), false) + " Expense(s)";
     document.querySelector("#amt_monthly_spend").innerHTML = "₹ " + getCurrentMonthExpense();
@@ -82,30 +25,61 @@ function updateCashAvailableUI() {
     elem.innerHTML = "₹ " + getCashBalance();
 }
 
+function createHistoryItemUI({ tx_date, tx_type, tx_amt }) {
+    const spend_date_elem = document.createElement('div'),
+          spend_type_elem = document.createElement('div'),
+          spend_amount_elem = document.createElement('div');    
+    spend_date_elem.className = "spend_date";
+    spend_type_elem.className = "spend_type";
+    
+    const spend_sign = tx_type == 0 ? '+' : '-';
+
+    spend_date_elem.innerHTML = getTxFormattedDate(tx_date);
+    spend_type_elem.innerHTML = tx_type_map[tx_type];
+    spend_amount_elem.innerHTML = spend_sign + " ₹" + parseFloat(tx_amt).toLocaleString();
+    spend_amount_elem.className = sign_map_class[spend_sign] + " " + "spend_amount";
+
+    return [spend_date_elem, spend_type_elem, spend_amount_elem];
+}
+
+function renderHistoryListUI() {
+    const spend_history_container = document.querySelector("#spend_history_list_container");
+    spend_history_container.innerHTML = "";
+    const spend_history_ul = document.createElement("ul");
+    const all_history_items = my_tx_data
+    .sort((a, b) => +(new Date(b.tx_date)) - +(new Date(a.tx_date)))
+    .map(record => {
+        const spend_history_item_li = document.createElement("li");
+        spend_history_item_li.className = "spend_history_item";
+        const history_item_ui = createHistoryItemUI(record);
+        history_item_ui.forEach(elem => {
+            spend_history_item_li.appendChild(elem);
+        });
+        return spend_history_item_li;
+    });
+    all_history_items.forEach(elem => {
+        spend_history_ul.appendChild(elem);
+    });
+    spend_history_container.append(spend_history_ul);
+}
+
 document.querySelectorAll("form").forEach(form => {
     form.addEventListener("submit", (event) => {
         event.preventDefault();
     });
 });
 
-
 function render() {
     updateMonthlySpendUI();
     updateTodaySpendUI();
     updateCashAvailableUI();
     renderHistoryListUI();
-    console.log(getRateChangeForMonth(), getRateChangeForDay());
 }
 
-render();
-
 document.querySelector("#spend_itemize_btn").addEventListener("click", () => {
-    const 
-        spend_date = new Date(),
+    const spend_date = new Date(),
         spend_category = parseInt(document.querySelector("#spend_cat_actual").value),
         spend_amt = parseFloat(document.querySelector("#spend_amt_actual").value);
-    
-    console.log(spend_date, spend_category, spend_amt);
 
     my_tx_data.push({
         tx_date: spend_date,
@@ -114,3 +88,6 @@ document.querySelector("#spend_itemize_btn").addEventListener("click", () => {
     });
     render();
 });
+
+// Let the magic begin
+render();
