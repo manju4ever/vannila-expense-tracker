@@ -23,11 +23,11 @@ const my_tx_data = [{
     tx_type: 1,
     tx_amt: 3000
 }, {
-    tx_date: "2020-03-16T09:11:16.985Z",
+    tx_date: "2020-02-16T09:11:16.985Z",
     tx_type: 1,
     tx_amt: 5000
 }, {
-    tx_date: "2020-03-16T09:11:16.985Z",
+    tx_date: "2020-02-16T09:11:16.985Z",
     tx_type: 2,
     tx_amt: 400
 }];
