@@ -1,3 +1,7 @@
+/*
+  !!! Check render() function before doing anything !!!
+*/
+
 const up = '↑', down = '↓';
 const sign_class_map = {
     [up]: 'credit',
